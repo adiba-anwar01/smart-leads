@@ -20,7 +20,7 @@ export function LeadsPage(): React.JSX.Element {
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === 'admin';
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<LeadFilters>({});
   const [page, setPage] = useState(1);
 

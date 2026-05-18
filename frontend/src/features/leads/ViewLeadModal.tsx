@@ -28,7 +28,6 @@ export function ViewLeadModal({
   isOpen,
   onClose,
   lead,
-  isAdmin,
   onEdit,
   onDelete,
 }: ViewLeadModalProps): React.JSX.Element | null {

@@ -6,7 +6,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { login as loginApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
-import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 
 const loginSchema = z.object({

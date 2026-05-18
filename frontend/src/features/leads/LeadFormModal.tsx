@@ -7,7 +7,6 @@ import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import type { Lead, CreateLeadPayload } from '../../types';
-import { LeadStatus } from '../../types';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -64,7 +63,7 @@ export function LeadFormModal({
 
   const handleFormSubmit = async (values: FormValues) => {
     try {
-      await onSubmit(values);
+      await onSubmit(values as CreateLeadPayload);
       toast.success(isEdit ? 'Lead updated!' : 'Lead created!');
       onClose();
     } catch (err) {
