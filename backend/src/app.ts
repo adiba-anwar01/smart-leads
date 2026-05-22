@@ -10,24 +10,19 @@ const app = express();
 
 app.use(helmet());
 
-// Configure CORS to properly handle Authorization headers
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow all origins in development
+    origin: (origin, callback) => {
       if (config.NODE_ENV === 'development') {
         callback(null, true);
         return;
       }
 
-      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) {
         callback(null, true);
         return;
       }
 
-      // In production, allow any origin but enforce authentication via JWT
-      // CORS is NOT a security boundary for API calls - use JWT for that
       callback(null, true);
     },
     credentials: true,

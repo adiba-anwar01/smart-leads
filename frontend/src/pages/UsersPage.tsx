@@ -5,9 +5,13 @@ import { getUsers, deleteUser, updateUserStatus } from '../api/users.api';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
+import { Users as UsersIcon } from 'lucide-react';
 import type { User } from '../types';
+import { useAuthStore } from '../store/auth.store';
 
 export function UsersPage(): React.JSX.Element {
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,13 +70,20 @@ export function UsersPage(): React.JSX.Element {
   }
 
   if (users.length === 0) {
-    return <EmptyState icon="users" title="No users found" description="There are currently no users." />;
+    return <EmptyState icon={<UsersIcon className="w-8 h-8 text-slate-400" />} title="No users found" description="There are currently no users." />;
   }
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h1 className="text-xl font-bold text-slate-800 dark:text-white">Users</h1>
+        <h1 className="text-xl font-bold text-slate-800 dark:text-white flex items-center">
+          Users
+          {isAdmin && (
+            <span className="ml-3 text-sm font-medium text-slate-500 bg-slate-100 dark:bg-slate-700 dark:text-slate-400 py-1 px-3 rounded-full">
+              {users.length} Total
+            </span>
+          )}
+        </h1>
       </div>
 
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">

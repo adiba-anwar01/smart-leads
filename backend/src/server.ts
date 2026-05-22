@@ -10,23 +10,19 @@ async function start(): Promise<void> {
     app.listen(config.PORT, () => {
     });
 
-    process.on('unhandledRejection', (err) => {
-      console.error('Unhandled Rejection:', err);
+    process.on('unhandledRejection', () => {
       process.exit(1);
     });
 
-    process.on('uncaughtException', (err) => {
-      console.error('Uncaught Exception:', err);
+    process.on('uncaughtException', () => {
       process.exit(1);
     });
   } catch (error) {
-    console.error('Start Error:', error);
     process.exit(1);
   }
 }
 
-start().catch((err) => {
-  console.error('Start Catch:', err);
+start().catch(() => {
   process.exit(1);
 });
 

@@ -14,6 +14,7 @@ import { Pagination } from '../components/ui/Pagination';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
+import { Download, Plus, Search, Check, Eye, Inbox } from 'lucide-react';
 import type { Lead, LeadFilters, CreateLeadPayload } from '../types';
 
 export function LeadsPage(): React.JSX.Element {
@@ -78,7 +79,9 @@ export function LeadsPage(): React.JSX.Element {
     }
   };
 
-  const hasActiveFilters = Object.keys(filters).length > 0;
+  const hasActiveFilters = Object.keys(filters).some(
+    (k) => k !== 'sort' || filters.sort !== 'latest'
+  );
   const showEmpty = !isLoading && !isError && leads.length === 0;
 
   return (
@@ -92,11 +95,12 @@ export function LeadsPage(): React.JSX.Element {
             size="sm"
             isLoading={exporting}
             onClick={handleExport}
+            className="flex items-center"
           >
-            ↓ Export CSV
+            <Download className="w-4 h-4 mr-1.5" /> Export CSV
           </Button>
-          <Button id="create-lead" size="sm" onClick={openCreate}>
-            + Create Lead
+          <Button id="create-lead" size="sm" onClick={openCreate} className="flex items-center">
+            <Plus className="w-4 h-4 mr-1.5" /> Create Lead
           </Button>
         </div>
       </div>
@@ -106,7 +110,7 @@ export function LeadsPage(): React.JSX.Element {
       {filters.createdBy && isAdmin && (
         <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="text-lg">👀</span>
+            <Eye className="w-5 h-5" />
             <p className="text-sm font-medium">Viewing leads for a specific user.</p>
           </div>
           <Button
@@ -128,19 +132,19 @@ export function LeadsPage(): React.JSX.Element {
 
       {showEmpty && !hasActiveFilters && (
         <EmptyState
-          icon="◈"
+          icon={<Inbox className="w-8 h-8 text-slate-500 " />}
           title="No leads yet"
-          description="Create your first lead to get started."
+          description="Create your first lead to start tracking customers"
           action={
-            <Button id="empty-create-lead" size="sm" onClick={openCreate}>
-              + Create Lead
+            <Button id="empty-create-lead" size="sm" onClick={openCreate} className="flex items-center">
+              <Check className="w-4 h-4 mr-1.5" /> Create Lead
             </Button>
           }
         />
       )}
       {showEmpty && hasActiveFilters && (
         <EmptyState
-          icon="🔍"
+          icon={<Search className="w-8 h-8 text-slate-500" />}
           title="No leads match your filters"
           description="Try adjusting or resetting your filters."
           action={

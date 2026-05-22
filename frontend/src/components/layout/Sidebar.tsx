@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
+import { LayoutDashboard, Target, Users, LogOut, TrendingUp } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,25 +11,12 @@ const navItems = [
   {
     label: 'Dashboard',
     path: '/dashboard',
-    icon: (
-      <svg className="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
+    icon: <LayoutDashboard className="w-[18px] h-[18px] shrink-0" />,
   },
   {
     label: 'Leads',
     path: '/leads',
-    icon: (
-      <svg className="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-      </svg>
-    ),
+    icon: <Target className="w-[18px] h-[18px] shrink-0" />,
   },
 ];
 
@@ -60,22 +48,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         className={`
           fixed top-0 left-0 z-50
           h-screen w-[260px]
-          bg-[#0f172a]
-          border-r border-[#1e293b]
+          bg-emerald-50 dark:bg-slate-900
+          border-r border-emerald-100 dark:border-slate-800
           flex flex-col
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
 
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-[#1e293b]">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 shadow-lg shadow-indigo-500/30">
-            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0110 2v5H6a1 1 0 00-.82 1.573l7 9a1 1 0 001.64 0l7-9A1 1 0 0020 7h-4V2a1 1 0 00-1.3-.954l-3.4 1z" clipRule="evenodd" />
-            </svg>
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-emerald-100 dark:border-slate-800">
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-600 shadow-lg shadow-emerald-500/30">
+            <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-white font-semibold text-[15px] tracking-tight leading-none">SmartLeads</h1>
+            <h1 className="text-slate-900 dark:text-white font-semibold text-[15px] tracking-tight leading-none">SmartLeads</h1>
             <p className="text-slate-500 text-[11px] mt-0.5 leading-none">CRM Dashboard</p>
           </div>
         </div>
@@ -95,17 +81,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   text-[13.5px] font-medium
                   transition-all duration-200 group
                   ${isActive
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-white text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400 shadow-sm dark:shadow-none'
+                    : 'text-emerald-700/70 hover:bg-emerald-100/50 hover:text-emerald-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                   }
                 `}
               >
-                <span className={`transition-colors duration-200 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                <span className={`transition-colors duration-200 ${isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600/60 group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-400'}`}>
                   {item.icon}
                 </span>
                 {item.label}
                 {isActive && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/70" />
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
                 )}
               </button>
             );
@@ -119,42 +105,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 text-[13.5px] font-medium mt-1
                 transition-all duration-200 group
                 ${location.pathname === '/users'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-white text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400 shadow-sm dark:shadow-none'
+                  : 'text-emerald-700/70 hover:bg-emerald-100/50 hover:text-emerald-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                 }
               `}
             >
-              <span className={`transition-colors duration-200 ${location.pathname === '/users' ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
-                <svg className="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <span className={`transition-colors duration-200 ${location.pathname === '/users' ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600/60 group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-400'}`}>
+                <Users className="w-[18px] h-[18px] shrink-0" />
               </span>
               Users
               {location.pathname === '/users' && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/70" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
               )}
             </button>
           )}
         </nav>
 
         {user && (
-          <div className="px-3 py-4 border-t border-[#1e293b]">
-            <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-800/60 mb-2">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+          <div className="px-3 py-4 border-t border-emerald-100 dark:border-slate-800">
+            <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-emerald-100/40 dark:bg-slate-800/30 mb-2 border border-emerald-100/50 dark:border-slate-800/50">
+              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white text-[13px] font-medium truncate leading-tight">{user.name}</p>
+                <p className="text-slate-900 dark:text-white text-[13px] font-medium truncate leading-tight">{user.name}</p>
                 <p className="text-slate-500 text-[11px] truncate leading-tight mt-0.5">{formatRole(user.role)}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 text-[12.5px] transition-all duration-200"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-emerald-700/70 hover:text-red-500 hover:bg-red-50 text-[12.5px] transition-all duration-200 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-500/10"
             >
-              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <LogOut className="w-4 h-4 shrink-0" />
               Sign out
             </button>
           </div>
