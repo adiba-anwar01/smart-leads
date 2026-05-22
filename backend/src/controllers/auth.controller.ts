@@ -1,7 +1,6 @@
 import type { RequestHandler } from 'express';
 import { UserModel } from '../models/user.model';
 import { generateToken } from '../utils/jwt.utils';
-import { sendSuccess } from '../utils/response.utils';
 import { AppError } from '../middleware/error.middleware';
 
 export const register: RequestHandler = async (req, res, next) => {
@@ -25,14 +24,18 @@ export const register: RequestHandler = async (req, res, next) => {
       role: user.role,
     });
 
-    sendSuccess(res, 201, 'User created successfully', {
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: {
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      }
     });
   } catch (error) {
     next(error);
@@ -56,20 +59,28 @@ export const login: RequestHandler = async (req, res, next) => {
       return next(new AppError('Invalid credentials', 401));
     }
 
+    if (!user.isActive) {
+      return next(new AppError('Your account has been deactivated. Please contact an admin.', 403));
+    }
+
     const token = generateToken({
       id: user._id.toString(),
       email: user.email,
       role: user.role,
     });
 
-    sendSuccess(res, 200, 'Login successful', {
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      }
     });
   } catch (error) {
     next(error);

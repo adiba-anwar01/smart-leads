@@ -43,11 +43,33 @@ export async function deleteLead(id: string): Promise<void> {
 export async function exportLeadsCSV(
   filters: Omit<LeadFilters, 'page'> = {},
 ): Promise<Blob> {
-  const { data } = await axiosInstance.get<Blob>('/leads/export/csv', {
-    params: filters,
-    responseType: 'blob',
-  });
-  return data;
+  try {
+    console.log('[CSV Export] Starting export with filters:', filters);
+    
+    const token = localStorage.getItem('auth-storage');
+    if (!token) {
+      console.error('[CSV Export] No auth token found in localStorage');
+    } else {
+      console.log('[CSV Export] Auth token found');
+    }
+
+    const { data } = await axiosInstance.get<Blob>('/leads/export/csv', {
+      params: filters,
+      responseType: 'blob',
+    });
+    
+    console.log('[CSV Export] Export successful, blob size:', data.size);
+    return data;
+  } catch (error: any) {
+    console.error('[CSV Export] Error:', {
+      status: error?.response?.status,
+      statusText: error?.response?.statusText,
+      message: error?.message,
+      headers: error?.response?.headers,
+      data: error?.response?.data,
+    });
+    throw error;
+  }
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {

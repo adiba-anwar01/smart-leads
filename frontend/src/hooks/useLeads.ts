@@ -26,41 +26,35 @@ export function useLeads(filters: LeadFilters = {}): UseLeadsReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-
   const filtersKey = JSON.stringify(filters);
 
-  useEffect(() => {
-    let cancelled = false;
+  const fetchLeads = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
     setError(null);
+    try {
+      const res = await getLeads(filters);
+      setLeads(res.leads);
+      setPagination(res.pagination);
+    } catch (err: unknown) {
+      setIsError(true);
+      setError(err instanceof Error ? err.message : 'Failed to fetch leads');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filtersKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    getLeads(filters)
-      .then((res) => {
-        if (cancelled) return;
-        setLeads(res.leads);
-        setPagination(res.pagination);
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return;
-        setIsError(true);
-        setError(err instanceof Error ? err.message : 'Failed to fetch leads');
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
 
-    return () => { cancelled = true; };
-  }, [filtersKey, tick]);
-
-  const refetch = useCallback(() => setTick((t) => t + 1), []);
+  const refetch = fetchLeads;
 
   const addLead = useCallback(async (payload: CreateLeadPayload): Promise<Lead> => {
     const lead = await createLead(payload);
-    setTick((t) => t + 1);
+    fetchLeads();
     return lead;
-  }, []);
+  }, [fetchLeads]);
 
   const editLead = useCallback(async (id: string, payload: UpdateLeadPayload): Promise<Lead> => {
     const updated = await updateLead(id, payload);
@@ -70,8 +64,8 @@ export function useLeads(filters: LeadFilters = {}): UseLeadsReturn {
 
   const removeLead = useCallback(async (id: string): Promise<void> => {
     await deleteLead(id);
-    setTick((t) => t + 1);
-  }, []);
+    fetchLeads();
+  }, [fetchLeads]);
 
   return { leads, pagination, isLoading, isError, error, refetch, addLead, editLead, removeLead };
 }

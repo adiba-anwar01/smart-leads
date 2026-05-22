@@ -49,7 +49,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   }
 
   if (config.NODE_ENV !== 'production') {
-    console.error('Unhandled error:', err);
   }
 
   sendError(res, 500, 'Internal server error');

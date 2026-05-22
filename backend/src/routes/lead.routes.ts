@@ -9,7 +9,6 @@ import {
   getDashboardStats,
 } from '../controllers/lead.controller';
 import { protect } from '../middleware/auth.middleware';
-import { restrictTo } from '../middleware/rbac.middleware';
 import {
   createLeadValidation,
   updateLeadValidation,
@@ -21,7 +20,7 @@ const router = Router();
 
 router.use(protect);
 
-router.get('/export/csv', restrictTo('admin'), exportLeadsCSV);
+router.get('/export/csv', exportLeadsCSV);
 router.get('/dashboard/stats', getDashboardStats);
 
 router.get('/', getLeads);
@@ -32,6 +31,6 @@ router.get('/:id', validateObjectId, getLeadById);
 
 router.put('/:id', validateObjectId, updateLeadValidation, validate, updateLead);
 
-router.delete('/:id', validateObjectId, restrictTo('admin'), deleteLead);
+router.delete('/:id', validateObjectId, deleteLead);
 
 export default router;

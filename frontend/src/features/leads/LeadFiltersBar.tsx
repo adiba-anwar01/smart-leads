@@ -34,6 +34,7 @@ export function LeadFiltersBar({ onChange }: LeadFiltersBarProps): React.JSX.Ele
   const status = params.get('status') ?? '';
   const source = params.get('source') ?? '';
   const sort = (params.get('sort') as 'latest' | 'oldest') ?? 'latest';
+  const createdBy = params.get('createdBy') ?? '';
 
   const debouncedSearch = useDebounce(rawSearch, 300);
 
@@ -43,8 +44,9 @@ export function LeadFiltersBar({ onChange }: LeadFiltersBarProps): React.JSX.Ele
     if (status) filters.status = status as LeadStatus;
     if (source) filters.source = source as LeadFilters['source'];
     if (sort) filters.sort = sort;
+    if (createdBy) filters.createdBy = createdBy;
     onChange(filters);
-  }, [debouncedSearch, status, source, sort, onChange]);
+  }, [debouncedSearch, status, source, sort, createdBy, onChange]);
 
   const set = (key: string, value: string) => {
     setParams((prev) => {
@@ -58,7 +60,7 @@ export function LeadFiltersBar({ onChange }: LeadFiltersBarProps): React.JSX.Ele
 
   const reset = () => setParams({});
 
-  const hasFilters = rawSearch || status || source || sort !== 'latest';
+  const hasFilters = rawSearch || status || source || sort !== 'latest' || createdBy;
 
   return (
     <div className="flex flex-wrap items-center gap-2">

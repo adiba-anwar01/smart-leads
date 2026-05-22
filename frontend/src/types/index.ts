@@ -13,6 +13,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  isActive: boolean;
 }
 
 export interface ILead {
@@ -32,6 +33,7 @@ export interface LeadFilters {
   search?: string;
   sort?: 'latest' | 'oldest';
   page?: number;
+  createdBy?: string;
 }
 
 export interface PaginationMeta {

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { login as loginApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { Button } from '../components/ui/Button';
+import { Mail, Lock, Eye, EyeOff, Zap } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -15,39 +16,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-const EmailIcon = (): React.JSX.Element => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="m22 7-10 5L2 7" />
-  </svg>
-);
 
-const LockIcon = (): React.JSX.Element => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
-
-const EyeIcon = (): React.JSX.Element => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
-const EyeOffIcon = (): React.JSX.Element => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-    <line x1="1" y1="1" x2="23" y2="23" />
-  </svg>
-);
-
-const LightningIcon = (): React.JSX.Element => (
-  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-  </svg>
-);
 
 export function LoginPage(): React.JSX.Element {
   const { login } = useAuthStore();
@@ -84,7 +53,7 @@ export function LoginPage(): React.JSX.Element {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="text-indigo-600">
-                <LightningIcon />
+                <Zap className="w-12 h-12" />
               </div>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
@@ -105,7 +74,7 @@ export function LoginPage(): React.JSX.Element {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                  <EmailIcon />
+                  <Mail className="w-5 h-5" />
                 </div>
                 <input
                   {...register('email')}
@@ -124,7 +93,7 @@ export function LoginPage(): React.JSX.Element {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                  <LockIcon />
+                  <Lock className="w-5 h-5" />
                 </div>
                 <input
                   {...register('password')}
@@ -138,7 +107,7 @@ export function LoginPage(): React.JSX.Element {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}

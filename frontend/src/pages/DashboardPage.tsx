@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 import { getDashboardStats } from '../api/leads.api';
 import type { DashboardStats } from '../types';
+import { Users, UserPlus, CheckCircle, XCircle } from 'lucide-react';
 
 const quickActions = [
-  { id: 'qa-report', label: 'Analytics', desc: 'View performance metrics', icon: '📊' },
-  { id: 'qa-team', label: 'Team', desc: 'Manage your sales team', icon: '👥' },
+  { id: 'qa-report', label: 'Analytics', desc: 'View performance metrics', icon: '📊', path: null },
+  { id: 'qa-leads', label: 'Leads', desc: 'Browse and manage all leads', icon: '🎯', path: '/leads' },
 ];
+
+
+
+const STATUS_COLORS: Record<string, string> = {
+  New: 'bg-blue-500',
+  Contacted: 'bg-amber-500',
+  Qualified: 'bg-emerald-500',
+  Lost: 'bg-red-500',
+};
 
 export function DashboardPage(): React.JSX.Element {
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
     getDashboardStats()
       .then((data) => {
-        if (mounted) setStats(data);
+        if (isMounted) setStats(data);
       })
-      .catch((err) => {
-        console.error('Failed to load dashboard stats', err);
-      });
+      .catch(() => {});
     return () => {
-      mounted = false;
+      isMounted = false;
     };
   }, []);
 
@@ -31,15 +41,9 @@ export function DashboardPage(): React.JSX.Element {
       id: 'total-leads',
       label: 'Total Leads',
       value: stats ? stats.totalLeads : '—',
-      change: '+0%', // Placeholder for future diff implementation
+      change: '+0%',
       positive: true,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" strokeLinecap="round" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" strokeLinecap="round" />
-        </svg>
-      ),
+      icon: <Users className="w-5 h-5" />,
       color: 'bg-indigo-50 text-indigo-600',
       ring: 'ring-indigo-100',
     },
@@ -49,11 +53,7 @@ export function DashboardPage(): React.JSX.Element {
       value: stats ? stats.newThisMonth : '—',
       change: '+0%',
       positive: true,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path d="M12 4v16m8-8H4" strokeLinecap="round" />
-        </svg>
-      ),
+      icon: <UserPlus className="w-5 h-5" />,
       color: 'bg-emerald-50 text-emerald-600',
       ring: 'ring-emerald-100',
     },
@@ -63,33 +63,24 @@ export function DashboardPage(): React.JSX.Element {
       value: stats ? stats.qualifiedLeads : '—',
       change: '+0%',
       positive: true,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
+      icon: <CheckCircle className="w-5 h-5" />,
       color: 'bg-amber-50 text-amber-600',
       ring: 'ring-amber-100',
     },
     {
-      id: 'contacted-leads',
-      label: 'Contacted Deals',
-      value: stats ? stats.contactedLeads : '—',
+      id: 'lost-leads',
+      label: 'Lost',
+      value: stats ? (stats.statusCounts?.['Lost'] ?? 0) : '—',
       change: '+0%',
-      positive: true,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
-      color: 'bg-purple-50 text-purple-600',
-      ring: 'ring-purple-100',
+      positive: false,
+      icon: <XCircle className="w-5 h-5" />,
+      color: 'bg-red-50 text-red-600',
+      ring: 'ring-red-100',
     },
   ];
 
   return (
     <div className="space-y-6">
-
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 py-3 px-5 text-white shadow-md shadow-indigo-200">
         <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
         <div className="absolute -bottom-4 right-10 w-14 h-14 rounded-full bg-white/5" />
@@ -126,7 +117,6 @@ export function DashboardPage(): React.JSX.Element {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
           <h3 className="text-[14px] font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
           <div className="space-y-2">
@@ -134,6 +124,7 @@ export function DashboardPage(): React.JSX.Element {
               <button
                 key={action.id}
                 id={action.id}
+                onClick={() => action.path && navigate(action.path)}
                 className="w-full flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-100 border border-transparent dark:border-slate-700 text-left transition-all duration-150 group"
               >
                 <span className="text-xl">{action.icon}</span>
@@ -155,12 +146,7 @@ export function DashboardPage(): React.JSX.Element {
               const count = stats?.statusCounts?.[status] || 0;
               const total = stats?.totalLeads || 0;
               const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-              
-              let color = 'bg-slate-500';
-              if (status === 'New') color = 'bg-blue-500';
-              if (status === 'Contacted') color = 'bg-amber-500';
-              if (status === 'Qualified') color = 'bg-emerald-500';
-              if (status === 'Lost') color = 'bg-red-500';
+              const colorClass = STATUS_COLORS[status] || 'bg-slate-500';
 
               return (
                 <div key={status}>
@@ -169,8 +155,8 @@ export function DashboardPage(): React.JSX.Element {
                     <span className="text-slate-500 dark:text-slate-400">{count} ({percentage}%)</span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                    <div
-                      className={`${color} h-2 rounded-full transition-all duration-500`}
+                    <div 
+                      className={`${colorClass} h-2 rounded-full transition-all duration-500`}
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -179,7 +165,6 @@ export function DashboardPage(): React.JSX.Element {
             })}
           </div>
         </div>
-
       </div>
     </div>
   );

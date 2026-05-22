@@ -6,13 +6,16 @@ import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import type { Lead, CreateLeadPayload } from '../../types';
+import { useAuthStore } from '../../store/auth.store';
+import { getUsers } from '../../api/users.api';
+import type { Lead, CreateLeadPayload, User } from '../../types';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email'),
   status: z.enum(['New', 'Contacted', 'Qualified', 'Lost']),
   source: z.enum(['Website', 'Instagram', 'Referral']),
+  createdBy: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -34,6 +37,9 @@ export function LeadFormModal({
   onSubmit,
 }: LeadFormModalProps): React.JSX.Element {
   const isEdit = !!lead;
+  const currentUser = useAuthStore((s) => s.user);
+  const isAdmin = currentUser?.role === 'admin';
+  const [users, setUsers] = React.useState<User[]>([]);
 
   const {
     register,
@@ -47,8 +53,19 @@ export function LeadFormModal({
       email: lead?.email ?? '',
       status: (lead?.status as FormValues['status']) ?? 'New',
       source: (lead?.source as FormValues['source']) ?? 'Website',
+      createdBy: lead?.createdBy
+        ? typeof lead.createdBy === 'string'
+          ? lead.createdBy
+          : lead.createdBy._id
+        : '',
     },
   });
+
+  React.useEffect(() => {
+    if (isAdmin && isOpen) {
+      getUsers().then(setUsers).catch(console.error);
+    }
+  }, [isAdmin, isOpen]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -57,13 +74,23 @@ export function LeadFormModal({
         email: lead?.email ?? '',
         status: (lead?.status as FormValues['status']) ?? 'New',
         source: (lead?.source as FormValues['source']) ?? 'Website',
+        createdBy: lead?.createdBy
+          ? typeof lead.createdBy === 'string'
+            ? lead.createdBy
+            : lead.createdBy._id
+          : '',
       });
     }
   }, [isOpen, lead, reset]);
 
   const handleFormSubmit = async (values: FormValues) => {
     try {
-      await onSubmit(values as CreateLeadPayload);
+      const payload: Partial<FormValues> = { ...values };
+      if (!payload.createdBy) {
+        delete payload.createdBy;
+      }
+      
+      await onSubmit(payload as CreateLeadPayload);
       toast.success(isEdit ? 'Lead updated!' : 'Lead created!');
       onClose();
     } catch (err) {
@@ -130,6 +157,19 @@ export function LeadFormModal({
           </select>
           {errors.source && <p className="text-[11.5px] text-red-500">{errors.source.message}</p>}
         </div>
+        {isAdmin && (
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="lead-owner" className="text-[13px] font-medium text-slate-700 dark:text-slate-300">
+              Assign To
+            </label>
+            <select id="lead-owner" className={selectClass} {...register('createdBy')}>
+              <option value="">-- Assign to User --</option>
+              {users.map((u) => (
+                <option key={u._id} value={u._id}>{u.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </form>
     </Modal>
   );

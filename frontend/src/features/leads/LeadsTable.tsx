@@ -8,7 +8,6 @@ import { LeadStatus } from '../../types';
 interface LeadsTableProps {
   leads: Lead[];
   isLoading: boolean;
-  isAdmin: boolean;
   onView: (lead: Lead) => void;
   onEdit: (lead: Lead) => void;
   onDelete: (lead: Lead) => void;
@@ -38,7 +37,6 @@ function SkeletonRow(): React.JSX.Element {
 export function LeadsTable({
   leads,
   isLoading,
-  isAdmin,
   onView,
   onEdit,
   onDelete,
@@ -92,16 +90,14 @@ export function LeadsTable({
                       >
                         Edit
                       </Button>
-                      {isAdmin && (
-                        <Button
-                          id={`delete-lead-${lead._id}`}
-                          size="sm"
-                          variant="danger"
-                          onClick={() => onDelete(lead)}
-                        >
-                          Delete
-                        </Button>
-                      )}
+                      <Button
+                        id={`delete-lead-${lead._id}`}
+                        size="sm"
+                        variant="danger"
+                        onClick={() => onDelete(lead)}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </td>
                 </tr>

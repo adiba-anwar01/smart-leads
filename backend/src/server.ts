@@ -8,26 +8,25 @@ async function start(): Promise<void> {
     await connectDB();
 
     app.listen(config.PORT, () => {
-      console.log(`Server running on port ${config.PORT}`);
     });
 
-    process.on('unhandledRejection', (reason: unknown) => {
-      console.error('Unhandled Rejection:', reason);
+    process.on('unhandledRejection', (err) => {
+      console.error('Unhandled Rejection:', err);
       process.exit(1);
     });
 
-    process.on('uncaughtException', (error: unknown) => {
-      console.error('Uncaught Exception:', error);
+    process.on('uncaughtException', (err) => {
+      console.error('Uncaught Exception:', err);
       process.exit(1);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('Start Error:', error);
     process.exit(1);
   }
 }
 
 start().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  console.error('Start Catch:', err);
   process.exit(1);
 });
+

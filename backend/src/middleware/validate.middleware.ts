@@ -54,6 +54,10 @@ export const createLeadValidation: RequestHandler[] = [
     .withMessage('Source is required')
     .isIn(['Website', 'Instagram', 'Referral'])
     .withMessage('Source must be one of: Website, Instagram, Referral'),
+  body('createdBy')
+    .optional({ checkFalsy: true })
+    .isMongoId()
+    .withMessage('Invalid User ID format'),
 ];
 
 export const updateLeadValidation: RequestHandler[] = [
@@ -71,6 +75,10 @@ export const updateLeadValidation: RequestHandler[] = [
     .optional()
     .isIn(['Website', 'Instagram', 'Referral'])
     .withMessage('Source must be one of: Website, Instagram, Referral'),
+  body('createdBy')
+    .optional({ checkFalsy: true })
+    .isMongoId()
+    .withMessage('Invalid User ID format'),
 ];
 
 export function validateObjectId(req: Request, res: Response, next: NextFunction): void {

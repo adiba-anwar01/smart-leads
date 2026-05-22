@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   password: string;
   role: 'admin' | 'sales_user';
+  isActive: boolean;
   createdAt: Date;
 }
 
@@ -86,7 +87,6 @@ export interface UpdateLeadDto {
 }
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: JwtPayload;

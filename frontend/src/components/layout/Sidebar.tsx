@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      
+
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm lg:hidden z-40"
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        
+
         <div className="flex items-center gap-3 px-5 py-5 border-b border-[#1e293b]">
           <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 shadow-lg shadow-indigo-500/30">
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -110,6 +110,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </button>
             );
           })}
+
+          {user?.role === 'admin' && (
+            <button
+              onClick={() => { navigate('/users'); onClose(); }}
+              className={`
+                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
+                text-[13.5px] font-medium mt-1
+                transition-all duration-200 group
+                ${location.pathname === '/users'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                }
+              `}
+            >
+              <span className={`transition-colors duration-200 ${location.pathname === '/users' ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                <svg className="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              Users
+              {location.pathname === '/users' && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/70" />
+              )}
+            </button>
+          )}
         </nav>
 
         {user && (

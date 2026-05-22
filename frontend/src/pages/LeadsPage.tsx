@@ -20,8 +20,12 @@ export function LeadsPage(): React.JSX.Element {
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === 'admin';
 
-  const [, setSearchParams] = useSearchParams();
-  const [filters, setFilters] = useState<LeadFilters>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const createdByParam = searchParams.get('createdBy');
+  
+  const [filters, setFilters] = useState<LeadFilters>(
+    createdByParam ? { createdBy: createdByParam } : {}
+  );
   const [page, setPage] = useState(1);
 
   const activeFilters: LeadFilters = { ...filters, page };
@@ -29,9 +33,9 @@ export function LeadsPage(): React.JSX.Element {
     useLeads(activeFilters);
 
   const [formOpen, setFormOpen] = useState(false);
-  const [editLead_, setEditLead] = useState<Lead | undefined>();
-  const [deleteLead_, setDeleteLead] = useState<Lead | null>(null);
-  const [viewLead_, setViewLead] = useState<Lead | null>(null);
+  const [selectedLeadForEdit, setSelectedLeadForEdit] = useState<Lead | undefined>();
+  const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null);
+  const [leadToView, setLeadToView] = useState<Lead | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const handleFiltersChange = useCallback((f: LeadFilters) => {
@@ -48,14 +52,14 @@ export function LeadsPage(): React.JSX.Element {
     });
   };
 
-  const openCreate = () => { setEditLead(undefined); setFormOpen(true); };
-  const openEdit = (lead: Lead) => { setEditLead(lead); setFormOpen(true); };
-  const openDelete = (lead: Lead) => setDeleteLead(lead);
-  const openView = (lead: Lead) => setViewLead(lead);
+  const openCreate = () => { setSelectedLeadForEdit(undefined); setFormOpen(true); };
+  const openEdit = (lead: Lead) => { setSelectedLeadForEdit(lead); setFormOpen(true); };
+  const openDelete = (lead: Lead) => setLeadToDelete(lead);
+  const openView = (lead: Lead) => setLeadToView(lead);
 
   const handleFormSubmit = async (data: CreateLeadPayload) => {
-    if (editLead_) {
-      await editLead(editLead_._id, data);
+    if (selectedLeadForEdit) {
+      await editLead(selectedLeadForEdit._id, data);
     } else {
       await addLead(data);
     }
@@ -79,21 +83,18 @@ export function LeadsPage(): React.JSX.Element {
 
   return (
     <div className="space-y-5">
-      
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h1 className="text-xl font-bold text-slate-800 dark:text-white">Leads</h1>
         <div className="flex items-center gap-2">
-          {isAdmin && (
-            <Button
-              id="export-csv"
-              variant="secondary"
-              size="sm"
-              isLoading={exporting}
-              onClick={handleExport}
-            >
-              ↓ Export CSV
-            </Button>
-          )}
+          <Button
+            id="export-csv"
+            variant="secondary"
+            size="sm"
+            isLoading={exporting}
+            onClick={handleExport}
+          >
+            ↓ Export CSV
+          </Button>
           <Button id="create-lead" size="sm" onClick={openCreate}>
             + Create Lead
           </Button>
@@ -101,6 +102,25 @@ export function LeadsPage(): React.JSX.Element {
       </div>
 
       <LeadFiltersBar onChange={handleFiltersChange} />
+
+      {filters.createdBy && isAdmin && (
+        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">👀</span>
+            <p className="text-sm font-medium">Viewing leads for a specific user.</p>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setSearchParams({});
+              setFilters({});
+            }}
+          >
+            Clear User Filter
+          </Button>
+        </div>
+      )}
 
       {isError && (
         <ErrorMessage message={error ?? 'Failed to load leads'} onRetry={refetch} />
@@ -140,7 +160,6 @@ export function LeadsPage(): React.JSX.Element {
         <LeadsTable
           leads={leads}
           isLoading={isLoading}
-          isAdmin={isAdmin}
           onView={openView}
           onEdit={openEdit}
           onDelete={openDelete}
@@ -154,19 +173,19 @@ export function LeadsPage(): React.JSX.Element {
       <LeadFormModal
         isOpen={formOpen}
         onClose={() => setFormOpen(false)}
-        lead={editLead_}
+        lead={selectedLeadForEdit}
         onSubmit={handleFormSubmit}
       />
       <DeleteLeadModal
-        isOpen={!!deleteLead_}
-        onClose={() => setDeleteLead(null)}
-        lead={deleteLead_}
+        isOpen={!!leadToDelete}
+        onClose={() => setLeadToDelete(null)}
+        lead={leadToDelete}
         onConfirm={removeLead}
       />
       <ViewLeadModal
-        isOpen={!!viewLead_}
-        onClose={() => setViewLead(null)}
-        lead={viewLead_}
+        isOpen={!!leadToView}
+        onClose={() => setLeadToView(null)}
+        lead={leadToView}
         isAdmin={isAdmin}
         onEdit={openEdit}
         onDelete={openDelete}

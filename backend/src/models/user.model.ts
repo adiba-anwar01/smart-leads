@@ -27,6 +27,10 @@ const userSchema = new Schema<IUserDocument>(
       enum: ['admin', 'sales_user'],
       default: 'sales_user',
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

@@ -5,6 +5,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { LeadsPage } from '../pages/LeadsPage';
+import { UsersPage } from '../pages/UsersPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { PageWrapper } from '../components/layout/PageWrapper';
 
@@ -15,10 +16,10 @@ export function AppRouter(): React.JSX.Element {
     <BrowserRouter>
       <Routes>
         
-        <Route path="/" element={<Navigate to="/leads" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/leads" replace /> : <LoginPage />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/leads" replace /> : <RegisterPage />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/login" replace /> : <RegisterPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route 
@@ -34,6 +35,14 @@ export function AppRouter(): React.JSX.Element {
             element={
               <PageWrapper pageTitle="Dashboard">
                 <DashboardPage />
+              </PageWrapper>
+            } 
+          />
+          <Route 
+            path="/users" 
+            element={
+              <PageWrapper pageTitle="Users">
+                <UsersPage />
               </PageWrapper>
             } 
           />
