@@ -132,3 +132,8 @@ Adiba Anwar
 # ⭐ Support
 
 If you liked this project, give it a ⭐ on GitHub.
+
+## 📄 License
+
+This project is licensed under the MIT License.  
+See the LICENSE file for more information.
